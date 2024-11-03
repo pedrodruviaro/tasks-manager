@@ -1,4 +1,3 @@
-import HomeView from '@/views/HomeView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -7,7 +6,34 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      redirect: '/tasks',
+    },
+    {
+      path: '/tasks/',
+      name: 'tasks',
+      component: () => import('@/views/tasks/TasksView.vue'),
+      children: [
+        {
+          path: 'all',
+          name: 'tasks-all',
+          component: () => import('@/views/tasks/TasksAllView.vue'),
+        },
+        {
+          path: 'complete',
+          name: 'tasks-completed',
+          component: () => import('@/views/tasks/TasksCompletedView.vue'),
+        },
+        {
+          path: 'today',
+          name: 'tasks-today',
+          component: () => import('@/views/tasks/TasksTodayView.vue'),
+        },
+        {
+          path: 'projects/:id',
+          name: 'tasks-projects',
+          component: () => import('@/views/tasks/TasksProjectsView.vue'),
+        },
+      ],
     },
   ],
 })
