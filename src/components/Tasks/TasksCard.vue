@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/card'
 import Button from '@/components/ui/button/Button.vue'
 import type { Task } from '@/types/entities'
+import { computed } from 'vue'
 
 const props = defineProps<{
   task: Task
@@ -18,16 +19,34 @@ const emits = defineEmits<{
   (e: 'complete', id: string): void
   (e: 'remove', id: string): void
 }>()
+
+const isPastDueDate = computed(() => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  return today > props.task.dueDate.toDate()
+})
 </script>
 
 <template>
-  <Card :class="{ 'bg-muted/80': props.completed }">
+  <Card
+    :class="{
+      'bg-muted/80': props.completed,
+      'border-destructive/90': isPastDueDate && !props.completed,
+    }"
+  >
     <CardHeader>
-      <CardTitle class="text-lg">{{ props.task.title }}</CardTitle>
+      <CardTitle class="text-lg flex items-center gap-2">
+        <iconify-icon
+          v-if="props.task.isUrgent"
+          icon="lucide:flag"
+          class="text-destructive/90"
+        ></iconify-icon>
+        {{ props.task.title }}</CardTitle
+      >
       <CardDescription v-if="props.task.description">{{
         props.task.description
       }}</CardDescription>
-      {{ props.task.completed }}
     </CardHeader>
     <CardContent v-if="!props.completed">
       <div class="flex gap-2">

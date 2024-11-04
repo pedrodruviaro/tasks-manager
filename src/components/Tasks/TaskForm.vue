@@ -3,9 +3,9 @@ import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
 import Label from '@/components/ui/label/Label.vue'
 import Switch from '@/components/ui/switch/Switch.vue'
-import { v4 as uuidv4 } from 'uuid'
-import { ref, watchEffect } from 'vue'
-import type { Task } from '@/types/entities'
+import { useServices } from '@/composables/useServices'
+import { useTasksStore } from '@/stores/tasks'
+import { ref } from 'vue'
 
 const props = defineProps<{
   projectId?: string
@@ -15,21 +15,22 @@ const title = ref('')
 const date = ref('')
 const isUrgent = ref(false)
 
-watchEffect(() => console.log(date.value))
+const services = useServices()
+const tasksStore = useTasksStore()
 
-const handleSubmit = () => {
-  const newTask: Task = {
+const handleSubmit = async () => {
+  const response = await services.tasks.create({
+    dueDate: date.value,
     title: title.value,
-    due_date: new Date(`${date.value}T00:00:00Z`).toISOString(),
-    createdAt: new Date(),
     completed: false,
-    id: uuidv4(),
-    project_id: props.projectId || '',
-    is_urgent: isUrgent.value,
-    description: '',
-  }
+    isUrgent: isUrgent.value,
+    projectId: props.projectId || '',
+    userId: 'LhXn65LUDFNho6kTRmRHHVoRqdE2',
+  })
 
-  console.log(newTask)
+  if (!response) return
+
+  tasksStore.tasks.unshift(response.task)
 }
 </script>
 
@@ -46,7 +47,7 @@ const handleSubmit = () => {
     </div>
     <div class="flex gap-2 justify-between mt-2">
       <div class="flex items-center gap-2">
-        <Switch v-model="isUrgent" />
+        <Switch @update:checked="isUrgent = !isUrgent" />
         <Label for="airplane-mode">Urgente</Label>
       </div>
       <Button>Criar</Button>

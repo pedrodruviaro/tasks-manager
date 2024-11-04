@@ -6,7 +6,6 @@ import { useTasksStore } from '@/stores/tasks'
 import { onMounted } from 'vue'
 
 const tasksStore = useTasksStore()
-
 onMounted(async () => await tasksStore.getTasks('completed'))
 </script>
 

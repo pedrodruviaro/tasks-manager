@@ -20,13 +20,17 @@ export const useTasksStore = defineStore('tasks', () => {
 
       switch (state) {
         case 'all':
-          response = await services.tasks.getAll()
+          response = await services.tasks.getAll('LhXn65LUDFNho6kTRmRHHVoRqdE2')
           break
         case 'completed':
-          response = await services.tasks.getCompleted()
+          response = await services.tasks.getCompleted(
+            'LhXn65LUDFNho6kTRmRHHVoRqdE2',
+          )
           break
         case 'today':
-          response = await services.tasks.getAllToday()
+          response = await services.tasks.getAllToday(
+            'LhXn65LUDFNho6kTRmRHHVoRqdE2',
+          )
           break
         default:
           throw new Error('Invalid getter')
@@ -45,7 +49,10 @@ export const useTasksStore = defineStore('tasks', () => {
   const removeTask = async (id: string) => {
     try {
       loadingActions.value = true
-      // call services later
+
+      const response = await services.tasks.removeOne(id)
+
+      if (!response) return
 
       const idx = tasks.value.findIndex(t => t.id === id)
       tasks.value.splice(idx, 1)
@@ -61,15 +68,18 @@ export const useTasksStore = defineStore('tasks', () => {
     try {
       loadingActions.value = true
 
+      console.log(id)
+
       const task = tasks.value.find(t => t.id === id)
       if (!task) return
-
       task.completed = true
 
-      // call services
+      const response = await services.tasks.completeOne(id)
 
-      const idx = tasks.value.findIndex(t => t.id === id)
-      tasks.value.splice(idx, 1)
+      if (response.taskId) {
+        const idx = tasks.value.findIndex(t => t.id === id)
+        tasks.value.splice(idx, 1)
+      }
     } catch (error) {
       console.error(error)
     } finally {
