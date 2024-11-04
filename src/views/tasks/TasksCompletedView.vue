@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import MainContent from '@/components/Tasks/MainContent.vue'
-
-/*
-onMounted () => calls tasks store with filter
-get loading from store
-get total from store
-get tasks from store 
+import TasksCard from '@/components/Tasks/TasksCard.vue'
+import TasksList from '@/components/Tasks/TasksList.vue'
+import { useTasksStore } from '@/stores/tasks'
+import { onMounted } from 'vue'
 
 const tasksStore = useTasksStore()
-tasksStore.tasks
-tasksStore.tasksCount
-tasksStore.getTasks({ state: 'completed' })
 
-*/
+onMounted(async () => await tasksStore.getTasks('completed'))
 </script>
 
 <template>
-  <MainContent :loading="false" title="Tarefas completadas">
-    <p>form</p>
-    <p>lista</p>
+  <MainContent :loading="tasksStore.loading" title="Completadas">
+    <TasksList>
+      <TasksCard
+        v-for="task in tasksStore.tasks"
+        :key="task.id"
+        :task="task"
+        :completed="true"
+      />
+    </TasksList>
   </MainContent>
 </template>
