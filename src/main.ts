@@ -1,4 +1,5 @@
 import '@/assets/index.css'
+import 'iconify-icon'
 
 import App from './App.vue'
 import router from './router'
